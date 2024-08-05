@@ -30,7 +30,9 @@ def _get_source_query(bq_dataset_name, bq_table_name, ml_use, limit=None):
         IF(pickup_grid IS NULL, 'NA', pickup_grid) pickup_grid,
         IF(dropoff_grid IS NULL, 'NA', dropoff_grid) dropoff_grid,
         IF(euclidean IS NULL, -1, euclidean) euclidean,
-        IF(loc_cross IS NULL, 'NA', loc_cross) loc_cross"""
+        IF(loc_cross IS NULL, 'NA', loc_cross) loc_cross,
+        community_name,
+        total_arrests"""
     if ml_use:
         query += f""",
         tip_bin

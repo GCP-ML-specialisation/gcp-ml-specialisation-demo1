@@ -43,6 +43,9 @@ def preprocessing_fn(inputs):
     outputs[features.TARGET_FEATURE_NAME] = inputs[features.TARGET_FEATURE_NAME]
 
     for key in outputs:
+        if isinstance(outputs[key], tf.sparse.SparseTensor):
+          outputs[key] = tf.sparse.to_dense(outputs[key])
+
         outputs[key] = tf.squeeze(outputs[key], -1)
 
     return outputs

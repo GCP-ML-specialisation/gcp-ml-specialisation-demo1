@@ -26,6 +26,7 @@ FEATURE_NAMES = [
     "dropoff_grid",
     "euclidean",
     "loc_cross",
+    "total_arrests"
 ]
 
 TARGET_FEATURE_NAME = "tip_bin"
@@ -36,6 +37,7 @@ NUMERICAL_FEATURE_NAMES = [
     "trip_seconds",
     "trip_miles",
     "euclidean",
+    "total_arrests"
 ]
 
 EMBEDDING_CATEGORICAL_FEATURES = {
