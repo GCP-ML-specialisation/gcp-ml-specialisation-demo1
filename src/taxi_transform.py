@@ -1,16 +1,7 @@
-
 import tensorflow as tf
 import tensorflow_transform as tft
 
-# Imported files such as taxi_constants are normally cached, so changes are
-# not honored after the first import.  Normally this is good for efficiency, but
-# during development when we may be iterating code it can be a problem. To
-# avoid this problem during development, reload the file.
 import taxi_constants
-import sys
-if 'google.colab' in sys.modules:  # Testing to see if we're doing development
-  import importlib
-  importlib.reload(taxi_constants)
 
 _NUMERICAL_FEATURES = taxi_constants.NUMERICAL_FEATURES
 #_BUCKET_FEATURES = taxi_constants.BUCKET_FEATURES

@@ -1,4 +1,3 @@
-
 NUMERICAL_FEATURES = ['trip_miles', 'trip_seconds', "total_arrests", "euclidean"]
 
 # Number of buckets used by tf.transform for encoding each feature.
