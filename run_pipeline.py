@@ -1,5 +1,6 @@
 from src.utils import * 
 from datetime import datetime
+from tfx.orchestration.local.local_dag_runner import LocalDagRunner
 
 import yaml
 
