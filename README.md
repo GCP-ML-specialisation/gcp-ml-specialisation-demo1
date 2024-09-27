@@ -41,14 +41,14 @@ To set up and run the demo, follow these steps:
    
    ```bash
    !gsutil mkdir "gs://{project}/{experiment_name}/{pipeline_name}/data" 
-  ```
+   ```
    - Copy Local File to GCP Bucket:
    Use the following command to copy it to your GCP bucket:
    
    ```bash
    DATA_PATH = "data/chicago_trips.csv"   
    !gsutil cp {DATA_PATH} gs://{project}/{experiment_name}/{pipeline_name}/data/data.csv
-  ```
+   ```
    - Copy Module Files to GCP Bucket:
    ```bash 
    MODULE_ROOT = gs://{bucket}/{experiment_name}/{pipeline_name}
