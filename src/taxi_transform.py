@@ -1,17 +1,31 @@
 import tensorflow as tf
 import tensorflow_transform as tft
 
-import taxi_constants
 
-_NUMERICAL_FEATURES = taxi_constants.NUMERICAL_FEATURES
-#_BUCKET_FEATURES = taxi_constants.BUCKET_FEATURES
-_FEATURE_BUCKET_COUNT = taxi_constants.FEATURE_BUCKET_COUNT
-_CATEGORICAL_NUMERICAL_FEATURES = taxi_constants.CATEGORICAL_NUMERICAL_FEATURES
-_CATEGORICAL_STRING_FEATURES = taxi_constants.CATEGORICAL_STRING_FEATURES
-_VOCAB_SIZE = taxi_constants.VOCAB_SIZE
-_OOV_SIZE = taxi_constants.OOV_SIZE
-_FARE_KEY = taxi_constants.FARE_KEY
-_LABEL_KEY = taxi_constants.LABEL_KEY
+_NUMERICAL_FEATURES = ['trip_miles', 'fare', 'trip_seconds', 'total_arrests', 'euclidean']
+_CATEGORICAL_NUMERICAL_FEATURES = [
+    'trip_hour', 'trip_day', 'trip_month',
+    'pickup_community_area',
+    'dropoff_community_area', 'trip_day_of_week'
+]
+_CATEGORICAL_STRING_FEATURES = [
+    'payment_type',
+]
+_VOCAB_SIZE = 1000
+_OOV_SIZE = 10
+_FARE_KEY = 'fare'
+_LABEL_KEY = 'tips'
+
+def t_name(key):
+  """
+  Rename the feature keys so that they don't clash with the raw keys when
+  running the Evaluator component.
+  Args:
+    key: The original feature key
+  Returns:
+    key with '_xf' appended
+  """
+  return key + '_xf'
 
 
 def _make_one_hot(x, key):
@@ -66,19 +80,14 @@ def preprocessing_fn(inputs):
   outputs = {}
   for key in _NUMERICAL_FEATURES:
     # If sparse make it dense, setting nan's to 0 or '', and apply zscore.
-    outputs[taxi_constants.t_name(key)] = tft.scale_to_z_score(
+    outputs[t_name(key)] = tft.scale_to_z_score(
         _fill_in_missing(inputs[key]), name=key)
 
-  #for key in _BUCKET_FEATURES:
-  #  outputs[taxi_constants.t_name(key)] = tf.cast(tft.bucketize(
-  #          _fill_in_missing(inputs[key]), _FEATURE_BUCKET_COUNT, name=key),
-  #          dtype=tf.float32)
-
   for key in _CATEGORICAL_STRING_FEATURES:
-    outputs[taxi_constants.t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
+    outputs[t_name(key)] = _make_one_hot(_fill_in_missing(inputs[key]), key)
 
   for key in _CATEGORICAL_NUMERICAL_FEATURES:
-    outputs[taxi_constants.t_name(key)] = _make_one_hot(tf.strings.strip(
+    outputs[t_name(key)] = _make_one_hot(tf.strings.strip(
         tf.strings.as_string(_fill_in_missing(inputs[key]))), key)
 
   # Was this passenger a big tipper?
