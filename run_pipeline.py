@@ -3,7 +3,7 @@ from google.cloud.aiplatform import pipeline_jobs
 import logging
 logging.getLogger().setLevel(logging.INFO)
 
-from src.utils import * 
+from src.utils import _create_pipeline, eval_config
 import os
 import yaml
 
