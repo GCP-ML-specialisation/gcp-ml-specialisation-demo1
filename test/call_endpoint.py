@@ -2,10 +2,15 @@ import tensorflow as tf
 import requests
 import subprocess
 from pprint import pprint
-from utils_test import *
+from utils_test import _read_schema, _make_proto_coder
 import yaml
+from os import path
 
-with open('../config.yaml', 'r') as file:
+basepath = path.dirname(__file__)
+filepath_yaml = path.abspath(path.join(basepath, "..", "config.yaml"))
+
+
+with open(filepath_yaml, 'r') as file:
     config = yaml.safe_load(file)
 
 # Get the access token using gcloud
@@ -18,7 +23,7 @@ access_token = (
 ENDPOINT_ID="6608526677817425920" 
 GOOGLE_CLOUD_REGION = config["region"]
 GOOGLE_CLOUD_PROJECT = config["project"]  
-SCHEMA_DIR = "../data/schema.pbtxt"
+SCHEMA_DIR = path.abspath(path.join(basepath, "..", "data", "schema.pbtxt"))
 
 instances = {
             "trip_month": [2],  

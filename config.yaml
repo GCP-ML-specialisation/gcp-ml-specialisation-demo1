@@ -1,13 +1,10 @@
-project: pa-poc-mlspec-1
+project: 'pa-poc-mlspec-1'
 region: 'us-west2'
+bucket: 'pa-poc-mlspec-1'
 
-pipeline_name: chicago_tips_pipeline
-pipeline_root: gs://pa-poc-mlspec-1/tfx_pipeline_output
-data_path: gs://pa-poc-mlspec-1/tfrecords/
-serving_model_dir: gs://pa-poc-mlspec-1/model/taxi_
-project_id: pa-poc-mlspec-1
-bucket: pa-poc-mlspec-1
-base_model_name: chicago-taxi-tips-classifier
+pipeline_name: 'chicago-vertex-training-270924'
+experiment_name: 'chicago_new'
+
 
 
 bq_dataset_name: 'playground' 
