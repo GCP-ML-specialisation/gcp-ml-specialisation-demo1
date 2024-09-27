@@ -1,27 +1,5 @@
 project: pa-poc-mlspec-1
 region: 'us-west2'
-gcs_location: gs://pa-poc-mlspec-1/temp-location
-
-query: |
-  SELECT
-      IF(trip_month IS NULL, -1, trip_month) AS trip_month,
-      IF(trip_day IS NULL, -1, trip_day) AS trip_day,
-      IF(trip_day_of_week IS NULL, -1, trip_day_of_week) AS trip_day_of_week,
-      IF(trip_hour IS NULL, -1, trip_hour) AS trip_hour,
-      IF(trip_seconds IS NULL, -1, trip_seconds) AS trip_seconds,
-      IF(trip_miles IS NULL, -1, trip_miles) AS trip_miles,
-      IF(payment_type IS NULL, 'NA', payment_type) AS payment_type,
-      IF(pickup_grid IS NULL, 'NA', pickup_grid) AS pickup_grid,
-      IF(dropoff_grid IS NULL, 'NA', dropoff_grid) AS dropoff_grid,
-      IF(euclidean IS NULL, -1, euclidean) AS euclidean,
-      IF(loc_cross IS NULL, 'NA', loc_cross) AS loc_cross,
-      IF(pickup_community_area IS NULL, -1, pickup_community_area) AS pickup_community_area,
-      IF(dropoff_community_area IS NULL, -1, dropoff_community_area) AS dropoff_community_area,
-      IF(total_arrests IS NULL, -1, total_arrests) AS total_arrests,
-      IF(fare IS NULL, -1, fare) AS fare,
-      IF(tips IS NULL, -1, tips) AS tips
-  FROM playground.taxi_trips
-  LIMIT 50000
 
 pipeline_name: chicago_tips_pipeline
 pipeline_root: gs://pa-poc-mlspec-1/tfx_pipeline_output
@@ -31,104 +9,6 @@ project_id: pa-poc-mlspec-1
 bucket: pa-poc-mlspec-1
 base_model_name: chicago-taxi-tips-classifier
 
-sql_script: |
-  CREATE OR REPLACE TABLE `@PROJECT.@DATASET.@TABLE` 
-  AS (
-      WITH
-        taxitrips AS (
-        SELECT
-          trip_start_timestamp,
-          trip_seconds,
-          trip_miles,
-          payment_type,
-          pickup_longitude,
-          pickup_latitude,
-          dropoff_longitude,
-          dropoff_latitude,
-          pickup_community_area,
-          tips,
-          fare,
-          dropoff_community_area
-        FROM
-          `pa-poc-mlspec-1.chicago_taxi_trips.taxi_trips`
-        WHERE 1=1 
-        AND pickup_longitude IS NOT NULL
-        AND pickup_latitude IS NOT NULL
-        AND dropoff_longitude IS NOT NULL
-        AND dropoff_latitude IS NOT NULL
-        AND trip_miles > 0
-        AND trip_seconds > 0
-        AND fare > 0
-        AND EXTRACT(YEAR FROM trip_start_timestamp) = @YEAR
-      ),
-
-      community_names AS (
-        SELECT
-          dropoff_community_area,
-          community_name
-        FROM
-          `pa-poc-mlspec-1.chicago_taxi_trips.chicago_area`
-      ),
-
-      total_arrests AS (
-        SELECT
-          community_area as dropoff_community_area,
-          COUNT(*) AS total_arrests
-        FROM
-          `pa-poc-mlspec-1.chicago_taxi_trips.chicago_crimes`
-        WHERE
-          year = @YEAR
-        GROUP BY
-          community_area
-      )
-
-      SELECT
-        trip_start_timestamp,
-        EXTRACT(MONTH from trip_start_timestamp) as trip_month,
-        EXTRACT(DAY from trip_start_timestamp) as trip_day,
-        EXTRACT(DAYOFWEEK from trip_start_timestamp) as trip_day_of_week,
-        EXTRACT(HOUR from trip_start_timestamp) as trip_hour,
-        trip_seconds,
-        trip_miles,
-        payment_type,
-        ST_AsText(
-            ST_SnapToGrid(ST_GeogPoint(pickup_longitude, pickup_latitude), 0.1)
-        ) AS pickup_grid,
-        ST_AsText(
-            ST_SnapToGrid(ST_GeogPoint(dropoff_longitude, dropoff_latitude), 0.1)
-        ) AS dropoff_grid,
-        ST_Distance(
-            ST_GeogPoint(pickup_longitude, pickup_latitude), 
-            ST_GeogPoint(dropoff_longitude, dropoff_latitude)
-        ) AS euclidean,
-        CONCAT(
-            ST_AsText(ST_SnapToGrid(ST_GeogPoint(pickup_longitude,
-                pickup_latitude), 0.1)), 
-            ST_AsText(ST_SnapToGrid(ST_GeogPoint(dropoff_longitude,
-                dropoff_latitude), 0.1))
-        ) AS loc_cross,
-        ca.community_name,
-        ta.total_arrests,
-        fare,
-        tips,
-        pickup_longitude,
-        pickup_latitude,
-        dropoff_longitude,
-        dropoff_latitude,
-        pickup_community_area,
-        ca.dropoff_community_area      
-      FROM
-        taxitrips tt
-      LEFT JOIN
-        community_names ca
-      ON
-        tt.dropoff_community_area = ca.dropoff_community_area
-      LEFT JOIN
-        total_arrests ta
-      ON
-        tt.dropoff_community_area = ta.dropoff_community_area
-      LIMIT @LIMIT
-  )
 
 bq_dataset_name: 'playground' 
 bq_table_name: 'taxi_trips'
@@ -136,4 +16,4 @@ bq_location: 'US'
 
 dataset_display_name: 'chicago-taxi-tips'
 
-raw_schema_dir: 'src/raw_schema'
+

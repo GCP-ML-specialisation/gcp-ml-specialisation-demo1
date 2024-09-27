@@ -36,4 +36,26 @@ To set up and run the demo, follow these steps:
      ```
 
 5. **Run the pipeline**:
-   - Execute the `run_pipeline.py` file to initiate the pipeline. A console log link will appear in the terminal, allowing you to monitor the pipeline's execution.
+   - Create Root Directory for the Experiment:
+   Use the following command to create a root directory in your GCP bucket:
+   
+   ```bash
+   !gsutil mkdir "gs://{project}/{experiment_name}/{pipeline_name}/data" 
+  ```
+   - Copy Local File to GCP Bucket:
+   Use the following command to copy it to your GCP bucket:
+   
+   ```bash
+   DATA_PATH = "data/chicago_trips.csv"   
+   !gsutil cp {DATA_PATH} gs://{project}/{experiment_name}/{pipeline_name}/data/data.csv
+  ```
+   - Copy Module Files to GCP Bucket:
+   ```bash 
+   MODULE_ROOT = gs://{bucket}/{experiment_name}/{pipeline_name}
+   taxi_transform_module_file="src/taxi_transform.py"
+   taxi_trainer_module_file="src/taxi_trainer.py"
+   gsutil cp ${taxi_transform_module_file} ${MODULE_ROOT}/
+   gsutil cp ${taxi_trainer_module_file} ${MODULE_ROOT}/   
+   ```
+   - Execute the `run_pipeline.py` file to initiate the pipeline. 
+  
