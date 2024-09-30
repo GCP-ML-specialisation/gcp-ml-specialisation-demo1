@@ -31,8 +31,8 @@ ENDPOINT_NAME = 'prediction-' + PIPELINE_NAME
 
 print('PIPELINE_ROOT: {}'.format(PIPELINE_ROOT))
 
-_taxi_transform_module_file = 'taxi_trainer.py'
-_taxi_trainer_module_file = 'taxi_transform.py'
+_taxi_transform_module_file = 'taxi_transform.py'
+_taxi_trainer_module_file = 'taxi_trainer.py'
 
 PIPELINE_DEFINITION_FILE = PIPELINE_NAME + '_pipeline.json'
 
