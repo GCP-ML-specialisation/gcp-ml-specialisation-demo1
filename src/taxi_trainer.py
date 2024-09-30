@@ -44,8 +44,6 @@ def _input_fn(file_pattern: List[Text],
 def _get_tf_examples_serving_signature(model, tf_transform_output):
   """Returns a serving signature that accepts `tensorflow.Example`."""
 
-  # We need to track the layers in the model in order to save it.
-  # TODO(b/162357359): Revise once the bug is resolved.
   model.tft_layer_inference = tf_transform_output.transform_features_layer()
 
   @tf.function(input_signature=[
@@ -61,8 +59,7 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
     logging.info('serve_transformed_features = %s', transformed_features)
 
     outputs = model(transformed_features)
-    # TODO(b/154085620): Convert the predicted labels from the model using a
-    # reverse-lookup (opposite of transform.py).
+
     return {'outputs': outputs}
 
   return serve_tf_examples_fn
@@ -71,8 +68,6 @@ def _get_tf_examples_serving_signature(model, tf_transform_output):
 def _get_transform_features_signature(model, tf_transform_output):
   """Returns a serving signature that applies tf.Transform to features."""
 
-  # We need to track the layers in the model in order to save it.
-  # TODO(b/162357359): Revise once the bug is resolved.
   model.tft_layer_eval = tf_transform_output.transform_features_layer()
 
   @tf.function(input_signature=[
@@ -128,8 +123,6 @@ def _build_keras_model(tf_transform_output: TFTransformOutput
       inputs[key] = tf.keras.layers.Input(
           shape=[None], name=key, dtype=spec.dtype, sparse=True)
     elif isinstance(spec, tf.io.FixedLenFeature):
-      # TODO(b/208879020): Move into schema such that spec.shape is [1] and not
-      # [] for scalars.
       inputs[key] = tf.keras.layers.Input(
           shape=spec.shape or [1], name=key, dtype=spec.dtype)
     else:
